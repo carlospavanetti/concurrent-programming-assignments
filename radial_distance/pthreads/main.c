@@ -4,6 +4,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <pthread.h>
+
 #define min(a,b) \
   ({ __typeof__ (a) _a = (a); \
       __typeof__ (b) _b = (b); \
@@ -15,7 +17,7 @@ typedef struct {
   double *directions;
 } RadialPoints;
 
-void read_arguments(int argc, char **argv, size_t *size);
+void read_arguments(int argc, char **argv, size_t *size, int *threads);
 void initialize_with_random(RadialPoints *, int size);
 void release_points(RadialPoints *);
 void release_distances(double *);
@@ -23,8 +25,9 @@ double *points_distances(RadialPoints *, RadialPoints *);
 
 int main(int argc, char **argv) {
   size_t size;
+  int threads;
   RadialPoints points[2];
-  read_arguments(argc, argv, &size);
+  read_arguments(argc, argv, &size, &threads);
 
   srand(time(NULL));
   initialize_with_random(&points[0], size);
@@ -39,14 +42,16 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void read_arguments(int argc, char **argv, size_t *size) {
-  if (argc == 1) {
-    *size = 0;
-    return;
-  }
-
-  if (strstr(argv[1], "-size=") == argv[1]) {
-    *size = strtol(argv[1] + 6, NULL, 10);
+void read_arguments(int argc, char **argv, size_t *size, int *threads) {
+  *size = 0;
+  *threads = 1;
+  for (int i = 1; i <= argc; i++) {
+    if (strstr(argv[i], "-size=") == argv[i]) {
+      *size = strtol(argv[1] + 6, NULL, 10);
+    }
+    if (strstr(argv[1], "-threads=") == argv[i]) {
+      *size = strtol(argv[1] + 9, NULL, 10);
+    }
   }
 }
 
