@@ -45,12 +45,12 @@ int main(int argc, char **argv) {
 void read_arguments(int argc, char **argv, size_t *size, int *threads) {
   *size = 0;
   *threads = 1;
-  for (int i = 1; i <= argc; i++) {
+  for (int i = 1; i < argc; i++) {
     if (strstr(argv[i], "-size=") == argv[i]) {
-      *size = strtol(argv[1] + 6, NULL, 10);
+      *size = strtol(argv[i] + 6, NULL, 10);
     }
-    if (strstr(argv[1], "-threads=") == argv[i]) {
-      *size = strtol(argv[1] + 9, NULL, 10);
+    if (strstr(argv[i], "-threads=") == argv[i]) {
+      *threads = strtol(argv[i] + 9, NULL, 10);
     }
   }
 }
