@@ -79,9 +79,12 @@ void compute_distances_block(
 ) {
   for (int i = offset; i < offset + size; i++) {
     distances[i] = sqrt(
-      (A->magnitudes * A->magnitudes) +
-      (B->magnitudes * B->magnitudes) -
-      2 * (A->magnitudes * B->magnitudes) * cos(A->directions - B->directions)
+      (A->magnitudes[i] * A->magnitudes[i]) +
+      (B->magnitudes[i] * B->magnitudes[i]) -
+      2 * (
+        (A->magnitudes[i] * B->magnitudes[i]) *
+        cos(A->directions[i] - B->directions[i])
+      )
     );
   }
 }
