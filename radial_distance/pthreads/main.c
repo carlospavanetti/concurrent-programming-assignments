@@ -73,19 +73,23 @@ void release_points(RadialPoints *points) {
   points->size = 0;
 }
 
+void compute_distances_block(
+  RadialPoints *A, RadialPoints *B,
+  double *distances, int offset, int size
+) {
+  for (int i = offset; i < offset + size; i++) {
+    distances[i] = sqrt(
+      (A->magnitudes * A->magnitudes) +
+      (B->magnitudes * B->magnitudes) -
+      2 * (A->magnitudes * B->magnitudes) * cos(A->directions - B->directions)
+    );
+  }
+}
+
 double *points_distances(RadialPoints *A, RadialPoints *B) {
   size_t size = min(A->size, B->size);
   double *distances = (double *) malloc(size * sizeof(double));
-
-  double *R1 = A->magnitudes;
-  double *R2 = B->magnitudes;
-  double *T1 = A->directions;
-  double *T2 = B->directions;
-  for (int i = 0; i < size; i++) {
-    distances[i] = sqrt(
-      (R1[i] * R1[i]) + (R2[i] * R2[i]) - 2 * (R1[i] * R2[i]) * cos(T2 - T1)
-    );
-  }
+  compute_distances_block(A, B, distances, 0, size);
   return distances;
 }
 
