@@ -80,7 +80,7 @@ void initialize_with_random(RadialPoints *points, int size) {
   points->directions = (double *) malloc(size * sizeof(double));
 
   for (int i = 0; i < size; i++) {
-    points->magnitudes[i] = ((rand() % 10000) / 7.0);
+    points->magnitudes[i] = ((rand() % 7000) / 70.0);
     points->directions[i] = ((rand() % 360) * M_PI / 180 );
   }
 }
@@ -133,18 +133,19 @@ double *points_distances(RadialPoints *A, RadialPoints *B, int threads) {
   } else {
     pthread_t *workers = (pthread_t *) malloc(threads * sizeof(pthread_t));
     int block_size = (int) (size / min(size, threads));
+    RDArguments *arguments = (RDArguments *) malloc(threads * sizeof(RDArguments));
     for (int i = 0; i < threads; i++) {
-      RDArguments *arguments = (RDArguments *) malloc(sizeof(RDArguments));
-      arguments->first_set  = A;
-      arguments->second_set = B;
-      arguments->distances = distances;
-      arguments->block_offset = min(block_size * i, size - 1);
-      arguments->block_size = min(block_size, size);
-      pthread_create(&workers[i], NULL, radial_distances_process, arguments);
+      arguments[i].first_set  = A;
+      arguments[i].second_set = B;
+      arguments[i].distances = distances;
+      arguments[i].block_offset = min(block_size * i, size - 1);
+      arguments[i].block_size = min(block_size, size);
+      pthread_create(&workers[i], NULL, radial_distances_process, &arguments[i]);
     }
     for (int i = 0; i < threads; i++) {
       pthread_join(workers[i], NULL);
     }
+    free(arguments);
     free(workers);
   }
   return distances;
