@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -17,7 +18,7 @@ typedef struct {
   double *directions;
 } RadialPoints;
 
-void read_arguments(int argc, char **argv, size_t *size, int *threads);
+void read_arguments(int argc, char **argv, size_t *size, int *threads, bool *verbose);
 void initialize_with_random(RadialPoints *, int size);
 void release_points(RadialPoints *);
 void release_distances(double *);
@@ -26,14 +27,27 @@ double *points_distances(RadialPoints *, RadialPoints *, int threads);
 int main(int argc, char **argv) {
   size_t size;
   int threads;
+  bool verbose;
   RadialPoints points[2];
-  read_arguments(argc, argv, &size, &threads);
+  read_arguments(argc, argv, &size, &threads, &verbose);
 
   srand(time(NULL));
   initialize_with_random(&points[0], size);
   initialize_with_random(&points[1], size);
 
+  if (verbose) {
+    for (int i = 0; i < size; i++) {
+      printf("A.r = %8.3lf\tA.t = %4.2lf\n", points[0].magnitudes[i], points[0].directions[i]);
+      printf("B.r = %8.3lf\tB.t = %4.2lf\n", points[1].magnitudes[i], points[1].directions[i]);
+    }
+  }
+
   double *distances = points_distances(&points[0], &points[1], threads);
+  if (verbose) {
+    for (int i = 0; i < size; i++) {
+      printf("Distance = %8.3lf\n", distances[i]);
+    }
+  }
 
   release_points(&points[0]);
   release_points(&points[1]);
@@ -42,15 +56,19 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void read_arguments(int argc, char **argv, size_t *size, int *threads) {
+void read_arguments(int argc, char **argv, size_t *size, int *threads, bool *verbose) {
   *size = 0;
   *threads = 1;
+  *verbose = false;
   for (int i = 1; i < argc; i++) {
     if (strstr(argv[i], "-size=") == argv[i]) {
       *size = strtol(argv[i] + 6, NULL, 10);
     }
     if (strstr(argv[i], "-threads=") == argv[i]) {
       *threads = strtol(argv[i] + 9, NULL, 10);
+    }
+    if (strstr(argv[i], "-verbose") == argv[i]) {
+      *verbose = true;
     }
   }
 }
