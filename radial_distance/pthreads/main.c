@@ -42,12 +42,23 @@ int main(int argc, char **argv) {
     }
   }
 
+  double elapsed;
+  struct timespec start, finish;
+  clock_gettime(CLOCK_MONOTONIC, &start);
+
   double *distances = points_distances(&points[0], &points[1], threads);
+
+  clock_gettime(CLOCK_MONOTONIC, &finish);
+  elapsed  = (finish.tv_sec  - start.tv_sec);
+  elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
   if (verbose) {
     for (int i = 0; i < size; i++) {
       printf("Distance = %8.3lf\n", distances[i]);
     }
   }
+
+  printf("Elapsed time: %.6lf", elapsed);
 
   release_points(&points[0]);
   release_points(&points[1]);
