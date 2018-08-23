@@ -21,5 +21,14 @@ public final class RadialDistancesArguments {
     return 1;
   }
 
+  public boolean maximum() {
+    for (String argument : arguments) {
+      if (argument.equals("-maximum")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private final String[] arguments;
 }
