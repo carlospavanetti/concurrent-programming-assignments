@@ -1,7 +1,7 @@
-public final class RadialDistances {
+public final class SerialRadialDistances implements RadialDistances {
   private PolarPoint[] references, targets;
 
-  public RadialDistances(PolarPoint[] references, PolarPoint[] targets) {
+  public SerialRadialDistances(PolarPoint[] references, PolarPoint[] targets) {
     this.references = references;
     this.targets = targets;
   }
