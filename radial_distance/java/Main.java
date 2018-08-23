@@ -10,13 +10,21 @@ public class Main {
       arguments.size()
     ).value();
 
+    final RadialDistances distances = (
+      (arguments.threads() <= 1) ?
+      new SerialRadialDistances(references, targets) :
+      new MultithreadRadialDistances(references, targets, arguments.threads())
+    );
+
     System.out.println(
       new ExecutionTime(
         (x) -> (
-          (arguments.threads() > 1) ?
-          new MultithreadRadialDistances(
-            references, targets, arguments.threads()
-          ).value() : new SerialRadialDistances(references, targets).value()
+          arguments.maximum() ?
+          (
+            (arguments.threads() <= 1) ?
+            new SerialMaxOfDistances(distances.value()) :
+            new MultithreadMaxOfDistances(distances.value(), arguments.threads())
+          ) : distances.value()
         )
       ).value()
     );
