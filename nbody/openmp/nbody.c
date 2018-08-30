@@ -4,6 +4,8 @@
 #include <math.h>
 #include <sys/time.h>
 
+#include <omp.h>
+
 /*
  * pRNG based on http://www.cs.wm.edu/~va/software/park/park.html
  */
@@ -55,8 +57,8 @@ int main() {
   int         npart;
   double      sim_t;       /* Tempo de Simulacao */
 
-  scanf("%d", &npart);
-  //npart = 25000;
+  // scanf("%d", &npart);
+  npart = 25000;
   /* Allocate memory for particles */
   particles = (Particle *) malloc(
     npart * sizeof(Particle)
@@ -118,6 +120,7 @@ double ComputeForces(
     yi   = myparticles[i].y;
     fx   = 0.0;
     fy   = 0.0;
+    #pragma omp parallel for shared(xi, yi) reduction(+:fx) reduction(+:fy) reduction(min:rmin)
     for (int j = 0; j < npart; j++) {
       rx = xi - others[j].x;
       ry = yi - others[j].y;
@@ -148,6 +151,7 @@ double ComputeNewPositions(
   a2 = 2.0 / (dt_old * (dt + dt_old));
   a1 = -(a0 + a2);
 
+  #pragma omp parallel for shared(particles, pv, a0, a2, a1)
   for (int i = 0; i < npart; i++) {
     double xi, yi;
     xi             = particles[i].x;
