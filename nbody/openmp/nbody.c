@@ -90,6 +90,9 @@ int main() {
   printf("%g\n", sim_t);
   printf("%d\n", tmili);
 
+  free(particles);
+  free(pv);
+
   return 0;
 }
 
