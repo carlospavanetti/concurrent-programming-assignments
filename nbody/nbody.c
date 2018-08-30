@@ -4,8 +4,6 @@
 #include <math.h>
 #include <sys/time.h>
 
-#include <omp.h>
-
 /*
  * pRNG based on http://www.cs.wm.edu/~va/software/park/park.html
  */
