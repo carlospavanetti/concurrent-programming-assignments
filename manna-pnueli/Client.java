@@ -1,27 +1,22 @@
 public final class Client extends Thread {
   private final int id;
-  private final Value request;
-  private final Value response;
+  private final Server server;
 
-  public Client(int id, Value request, Value response) {
+  public Client(int id, Server server) {
     this.id = id;
-    this.request = request;
-    this.response = response;
+    this.server = server;
   }
 
   public void run() {
     while (true) {
-      requestAuthorization();
-      criticalSection();
-      releaseAuthorization();
+      this.requestAuthorization();
+      this.criticalSection();
+      this.releaseAuthorization();
     }
   }
 
   private void requestAuthorization() {
-    System.out.println("Ask authorization " + this.id);
-    while (this.response.value() != this.id) {
-      this.request.update(this.id);
-    }
+    this.server.register(this);
   }
 
   private void criticalSection() {
@@ -29,7 +24,6 @@ public final class Client extends Thread {
   }
 
   private void releaseAuthorization() {
-    System.out.println("Release authorization");
-    this.response.update(0);
+    this.server.release(this);
   }
 }

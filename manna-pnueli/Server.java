@@ -1,18 +1,28 @@
 public final class Server extends Thread {
-  private final Value request;
-  private final Value response;
+  private final Value request = new Value(0);
+  private final Value response = new Value(0);
 
-  public Server(Value request, Value response) {
-    this.request = request;
-    this.response = response;
+  public Server() {}
+
+  public void register(Client client) {
+    while (this.response.value() != client.hashCode()) {
+      this.request.update(client.hashCode());
+    }
+  }
+
+  public void release(Client client) {
+    System.out.println("Release authorization");
+    if (this.response.value() == client.hashCode()) {
+      this.response.update(0);
+    }
   }
 
   public void run() {
     while (true) {
-      waitRequest();
-      authorize();
-      waitRelease();
-      resetResquests();
+      this.waitRequest();
+      this.authorize();
+      this.waitRelease();
+      this.resetResquests();
     }
   }
 
