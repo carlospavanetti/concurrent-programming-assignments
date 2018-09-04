@@ -11,15 +11,25 @@ public final class Client extends Thread {
 
   public void run() {
     while (true) {
-      System.out.println("Ask authorization " + this.id);
-      while (this.response.value() != this.id) {
-        this.request.update(this.id);
-      }
-
-      System.out.println("Use critical section at " + this.id);
-
-      System.out.println("Release authorization");
-      this.response.update(0);
+      requestAuthorization();
+      criticalSection();
+      releaseAuthorization();
     }
+  }
+
+  private void requestAuthorization() {
+    System.out.println("Ask authorization " + this.id);
+    while (this.response.value() != this.id) {
+      this.request.update(this.id);
+    }
+  }
+
+  private void criticalSection() {
+    System.out.println("Use critical section at " + this.id);
+  }
+
+  private void releaseAuthorization() {
+    System.out.println("Release authorization");
+    this.response.update(0);
   }
 }
