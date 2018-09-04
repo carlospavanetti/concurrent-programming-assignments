@@ -54,7 +54,7 @@ double ComputeNewPositions(Particle [], ParticleV [], int, double);
 int threads;
 pthread_t *workers;
 void AllocateWorkers(int number);
-void RunWorkers();
+void RunWorkers(Particle* particles, ParticleV *pv, double a0, double a1, double a2, int npart);
 
 typedef struct {
   Particle *particles;
@@ -167,7 +167,7 @@ double ComputeNewPositions(
   a1 = -(a0 + a2);
 
   AllocateWorkers(4);
-  RunWorkers();
+  RunWorkers(particles, pv, a0, a1, a2, npart);
 
   dt_new = 1.0 / sqrt(max_f);
   /* Set a minimum: */
@@ -228,5 +228,5 @@ void *process(void *args) {
 
 void AllocateWorkers(int number) {
   threads = threads;
-  pthread_t *workers = (pthread_t *) malloc(threads * sizeof(pthread_t));
+  workers = (pthread_t *) malloc(threads * sizeof(pthread_t));
 }
