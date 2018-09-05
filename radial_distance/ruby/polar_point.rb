@@ -19,6 +19,7 @@ module Collection
     attr_reader :values
 
     def initialize(size, factory)
+      @size = size
       @values = (1..size).map do
         factory.polar_point()
       end

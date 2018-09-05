@@ -7,9 +7,15 @@ module Collection
       end
 
       def values
+        references, targets = @references.values(), @targets.values()
         size = [references.size, targets.size].min()
-        (1..size).map do |index|
-          references[index].distance(targets[i])
+        (0..size-1).map do |index|
+          ans = references[index].distance(targets[index])
+          if block_given?
+            yield ans
+          else
+            ans
+          end
         end
       end
     end
