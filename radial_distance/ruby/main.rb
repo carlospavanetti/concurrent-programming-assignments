@@ -9,11 +9,19 @@ arguments  = RadialDistancesArguments.new(ARGV)
 generator  = Factory::RandomPoint.new(100)
 references = Collection::PolarPoints.new(arguments.size(), generator)
 targets    = Collection::PolarPoints.new(arguments.size(), generator)
-distances  = Collection::Serial::Distances.new(references, targets)
-maximum_of = Reductor::Serial::MaximumOf.new(distances)
+threads    = arguments.threads()
+if threads > 1 then
+  distances = Collection::Multithread::Distances.new(
+    references, targets, threads,
+  )
+  maximum_of = Reductor::Multithread::MaximumOf.new(distances, threads)
+else
+  distances = Collection::Serial::Distances.new(references, targets)
+  maximum_of = Reductor::Serial::MaximumOf.new(distances)
+end
 
 if arguments.maximum()
   puts(Benchmark.measure {maximum_of.value()})
 else
-  puts(Benchmark.measure {distances.value()})
+  puts(Benchmark.measure {distances.values()})
 end
